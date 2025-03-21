@@ -1,4 +1,4 @@
-package pe.edu.utp.objetos;
+package utp.edu.pe.objetos;
 
 public class Usuario {
     private String nombreUsuario;

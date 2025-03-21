@@ -1,16 +1,24 @@
-package pe.edu.utp.servicios;
+package utp.edu.pe.servicios;
 
-import pe.edu.utp.objetos.RegistroSismico;
-import pe.edu.utp.objetos.Usuario;
-import pe.edu.utp.utilidades.TextUTP;
+import utp.edu.pe.objetos.RegistroSismico;
+import utp.edu.pe.objetos.Usuario;
+import utp.edu.pe.seguridad.ErrorLog;
+import utp.edu.pe.seguridad.Validadores;
+import utp.edu.pe.utilidades.TextUTP;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ServicioCargaDatos {
-    public static List<RegistroSismico> cargarRegistrosSismicos() {
+import static utp.edu.pe.seguridad.ErrorLog.Level.ERROR;
 
+public class ServicioCargaDatos {
+    static String lugar = "ServicioCargaDatos";
+
+    // Método para cargar registros sísmicos desde un archivo CSV
+    public static List<RegistroSismico> cargarRegistrosSismicos(ErrorLog errorLog) {
         String csvFile = "src/main/resources/dataset/Catalogo1960_2023.csv";
         // Lista para almacenar los registros
         List<RegistroSismico> registros = new ArrayList<>();
@@ -31,24 +39,31 @@ public class ServicioCargaDatos {
                 int profundidad = Integer.parseInt(parts[5]);
                 double magnitud = Double.parseDouble(parts[6]);
 
+                // Validar los datos antes de crear el objeto RegistroSismico
+                Validadores.esFechaValida(fechaUTC);
+                Validadores.esHoraValida(horaUTC);
+                Validadores.sonCoordenadasValidas(latitud, longitud);
+                Validadores.esProfundidadValida(profundidad);
+                Validadores.esAnioValido(LocalDate.parse(fechaUTC, DateTimeFormatter.ofPattern("yyyyMMdd")).getYear());
+                Validadores.sonMagnitudesValidas(magnitud, magnitud);
+
                 // Crear objeto RegistroSismico y agregarlo a la lista
-                RegistroSismico registro = new RegistroSismico(id, fechaUTC, horaUTC, latitud, longitud,
-                        profundidad, magnitud);
+                RegistroSismico registro = new RegistroSismico(id, fechaUTC, horaUTC, latitud, longitud, profundidad, magnitud);
                 registros.add(registro);
             }
 
             return registros;
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            errorLog.log(e.getMessage(), ERROR, lugar); // Registrar el error utilizando el objeto ErrorLog
         }
 
         return null;
     }
 
-    public static List<Usuario> cargarUsuarios() {
-
-        String usuariosFile = "src/main/resources/credenciales/usuarios.txt"; // Reemplaza con la ruta de tu archivo de usuarios
+    // Método para cargar usuarios desde un archivo TXT
+    public static List<Usuario> cargarUsuarios(ErrorLog errorLog) {
+        String usuariosFile = "src/main/resources/credenciales/usuarios.txt";
 
         try {
             List<String> lines = TextUTP.readlines(usuariosFile);
@@ -74,7 +89,7 @@ public class ServicioCargaDatos {
             return usuarios;
 
         } catch (IOException e) {
-            e.printStackTrace();
+            errorLog.log(e.getMessage(), ERROR, lugar); // Registrar el error utilizando el objeto ErrorLog
         }
 
         return null;

@@ -1,16 +1,17 @@
-package pe.edu.utp.servicios;
+package utp.edu.pe.servicios;
 
-import pe.edu.utp.objetos.RegistroSismico;
-import pe.edu.utp.objetos.Usuario;
+import utp.edu.pe.objetos.RegistroSismico;
+import utp.edu.pe.seguridad.ErrorLog;
 
 import java.util.List;
 
 public class ServicioReportes {
-    static List<RegistroSismico> registros = ServicioCargaDatos.cargarRegistrosSismicos();
 
     // Método para obtener el número de eventos sísmicos por mes y su porcentaje
-    // Método para obtener el número de eventos sísmicos por mes y su porcentaje
-    public static Object[] obtenerEventosPorMes(int startYear, int endYear) {
+    public static Object[] obtenerEventosPorMes(int startYear, int endYear, ErrorLog errorLog) {
+
+        List<RegistroSismico> registros = ServicioCargaDatos.cargarRegistrosSismicos(errorLog);
+
         int[] eventosPorMes = new int[12];
         int totalEventos = 0;
 
@@ -35,8 +36,10 @@ public class ServicioReportes {
     }
 
     // Método para obtener el número de eventos sísmicos por mes y su porcentaje para un año
-    // Método para obtener el número de eventos sísmicos por mes y su porcentaje para un año
-    public static Object[] obtenerEventosPorMesParaUnAno(int year) {
+    public static Object[] obtenerEventosPorMesParaUnAno(int year, ErrorLog errorLog) {
+
+        List<RegistroSismico> registros = ServicioCargaDatos.cargarRegistrosSismicos(errorLog);
+
         int[] eventosPorMes = new int[12];
         int totalEventos = 0;
 
@@ -60,7 +63,10 @@ public class ServicioReportes {
     }
 
     // Método para obtener el número de eventos sísmicos por mes y su porcentaje para un año y rango de magnitudes
-    public static Object[] obtenerEventosPorMesParaAnoYRangoDeMagnitudes(int year, double minMagnitude, double maxMagnitude) {
+    public static Object[] obtenerEventosPorMesParaAnoYRangoDeMagnitudes(int year, double minMagnitude, double maxMagnitude, ErrorLog errorLog) {
+
+        List<RegistroSismico> registros = ServicioCargaDatos.cargarRegistrosSismicos(errorLog);
+
         int[] eventosPorMes = new int[12];
         int totalEventos = 0;
 
@@ -84,7 +90,10 @@ public class ServicioReportes {
     }
 
     // Método para obtener el número de eventos sísmicos por cada hora en un año
-    public static int[] obtenerEventosPorHoraParaUnAno(int year) {
+    public static int[] obtenerEventosPorHoraParaUnAno(int year, ErrorLog errorLog) {
+
+        List<RegistroSismico> registros = ServicioCargaDatos.cargarRegistrosSismicos(errorLog);
+
         int[] eventosPorHora = new int[24];
 
         // Contar eventos por hora dentro del año especificado

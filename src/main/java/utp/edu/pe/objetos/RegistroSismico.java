@@ -1,4 +1,4 @@
-package pe.edu.utp.objetos;
+package utp.edu.pe.objetos;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

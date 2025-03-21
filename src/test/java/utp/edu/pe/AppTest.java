@@ -1,4 +1,4 @@
-package pe.edu.utp;
+package utp.edu.pe;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

@@ -1,22 +1,18 @@
-package pe.edu.utp.vistas;
+package utp.edu.pe.vistas;
 
-import pe.edu.utp.objetos.RegistroSismico;
-import pe.edu.utp.seguridad.ErrorLog;
-import pe.edu.utp.seguridad.Validadores;
-import pe.edu.utp.servicios.ServicioCargaDatos;
-import pe.edu.utp.servicios.ServicioExportarArchivos;
-import pe.edu.utp.servicios.ServicioLogin;
-import pe.edu.utp.servicios.ServicioReportes;
+import utp.edu.pe.seguridad.ErrorLog;
+import utp.edu.pe.seguridad.Validadores;
+import utp.edu.pe.servicios.ServicioExportarArchivos;
+import utp.edu.pe.servicios.ServicioLogin;
+import utp.edu.pe.servicios.ServicioReportes;
 
-import java.util.List;
 import java.util.Scanner;
-
-import static pe.edu.utp.seguridad.ErrorLog.Level.*;
 
 public class Modulos {
     static String lugar = "Modulos";
     static String msg;
 
+    // Método para imprimir el menú principal en consola
     public static void printMenuPrincipal() {
         String menu = """
             ------------------------------------------------------------------------------------
@@ -33,8 +29,8 @@ public class Modulos {
         System.out.printf(menu);
     }
 
-    public static String loginMenu(Scanner scanner) {
-
+    // Método para el menú de inicio de sesión
+    public static String loginMenu(Scanner scanner, ErrorLog errorLog) {
         String bienvenida = """
                 ------------------------------------------------------------------------------------
                 Bienvenido. Por favor, inicie sesión.
@@ -49,14 +45,17 @@ public class Modulos {
         System.out.print("Ingrese su contraseña: ");
         String password = scanner.next();
 
-        if (ServicioLogin.validateCredentials(username, password)){
+        // Validación de credenciales usando el servicio de login
+        if (ServicioLogin.validateCredentials(username, password, errorLog)){
             return username;
         }
 
         return null;
     }
 
+    // Módulo para eventos por rango de años
     public static void eventosPorRangoDeAnios(Scanner scanner, ErrorLog errorLog) {
+
         int startYear, endYear;
 
         // Solicitar al usuario que ingrese el rango de años
@@ -69,7 +68,7 @@ public class Modulos {
             } catch (Exception e) {
                 msg = e.getMessage();
                 System.out.println(msg);
-                errorLog.log(msg, ERROR,lugar);
+                errorLog.log(msg, ErrorLog.Level.ERROR,lugar);
                 continue;
             }
 
@@ -84,7 +83,7 @@ public class Modulos {
                 break; // Salir del bucle si todo está correcto
             } catch (Exception e) {
                 msg = e.getMessage();
-                errorLog.log(msg, ERROR,lugar);
+                errorLog.log(msg, ErrorLog.Level.ERROR,lugar);
                 System.out.println(msg);
             }
         } while (true);
@@ -105,7 +104,7 @@ public class Modulos {
                 System.out.printf(menu, startYear, endYear);
                 option = scanner.nextInt();
 
-                Object[] resultados = ServicioReportes.obtenerEventosPorMes(startYear, endYear);
+                Object[] resultados = ServicioReportes.obtenerEventosPorMes(startYear, endYear, errorLog);
 
                 int[] eventosPorMes = (int[]) resultados[0];
                 double[] porcentajePorMes = (double[]) resultados[1];
@@ -115,14 +114,14 @@ public class Modulos {
                         Reportes.eventosPorRangoDeAnios(startYear, endYear, eventosPorMes, porcentajePorMes);
                         break;
                     case 2:
-                        ServicioExportarArchivos.eventosPorRangoDeAnios(startYear, endYear, eventosPorMes, porcentajePorMes);
+                        ServicioExportarArchivos.eventosPorRangoDeAnios(startYear, endYear, eventosPorMes, porcentajePorMes, errorLog);
                         break;
                     case 0:
                         System.out.println("Volviendo al Menú Principal...");
                         break;
                     default:
                         msg = "Opción no válida. Por favor, ingrese una opción entre 0 y 2.";
-                        errorLog.log(msg, WARN,lugar);
+                        errorLog.log(msg, ErrorLog.Level.WARN,lugar);
                         System.out.println(msg);
                 }
 
@@ -132,6 +131,7 @@ public class Modulos {
         } while (true);
     }
 
+    // Módulo para eventos por mes dado un año
     public static void eventosPorMes(Scanner scanner, ErrorLog errorLog) {
         int year;
 
@@ -145,7 +145,7 @@ public class Modulos {
                 break; // Salir del bucle si todo está correcto
             } catch (Exception e) {
                 msg = e.getMessage();
-                errorLog.log(msg, ERROR,lugar);
+                errorLog.log(msg, ErrorLog.Level.ERROR,lugar);
                 System.out.println(msg);
             }
         } while (true);
@@ -164,7 +164,7 @@ public class Modulos {
             System.out.printf(menu, year);
             option = scanner.nextInt();
 
-            Object[] resultados = ServicioReportes.obtenerEventosPorMesParaUnAno(year);
+            Object[] resultados = ServicioReportes.obtenerEventosPorMesParaUnAno(year, errorLog);
             int[] eventosPorMes = (int[]) resultados[0];
             double[] porcentajePorMes = (double[]) resultados[1];
 
@@ -173,14 +173,14 @@ public class Modulos {
                     Reportes.eventosPorMes(year, eventosPorMes, porcentajePorMes);
                     break;
                 case 2:
-                    ServicioExportarArchivos.eventosPorMes(year, eventosPorMes, porcentajePorMes);
+                    ServicioExportarArchivos.eventosPorMes(year, eventosPorMes, porcentajePorMes, errorLog);
                     break;
                 case 0:
                     System.out.println("Volviendo al Menú Principal...");
                     break;
                 default:
                     msg = "Opción no válida. Por favor, ingrese una opción entre 0 y 2.";
-                    errorLog.log(msg, WARN,lugar);
+                    errorLog.log(msg, ErrorLog.Level.WARN,lugar);
                     System.out.println(msg);
             }
 
@@ -188,6 +188,7 @@ public class Modulos {
         } while (option != 0);
     }
 
+    // Módulo para eventos por mes y rango de magnitudes en un año
     public static void eventosPorMesYRangoDeMagnitudes(Scanner scanner, ErrorLog errorLog) {
         int year;
         double minMagnitude, maxMagnitude;
@@ -202,7 +203,7 @@ public class Modulos {
                 break; // Salir del bucle si todo está correcto
             } catch (Exception e) {
                 msg = e.getMessage();
-                errorLog.log(msg, ERROR,lugar);
+                errorLog.log(msg, ErrorLog.Level.ERROR,lugar);
                 System.out.println(msg);
             }
         } while (true);
@@ -219,7 +220,7 @@ public class Modulos {
                 break; // Salir del bucle si todo está correcto
             } catch (Exception e) {
                 msg = e.getMessage();
-                errorLog.log(msg, ERROR,lugar);
+                errorLog.log(msg, ErrorLog.Level.ERROR,lugar);
                 System.out.println(msg);
             }
         } while (true);
@@ -239,7 +240,7 @@ public class Modulos {
             option = scanner.nextInt();
 
             // Llamada a la función y asignación de los resultados
-            Object[] resultados = ServicioReportes.obtenerEventosPorMesParaAnoYRangoDeMagnitudes(year, minMagnitude, maxMagnitude);
+            Object[] resultados = ServicioReportes.obtenerEventosPorMesParaAnoYRangoDeMagnitudes(year, minMagnitude, maxMagnitude, errorLog);
             int[] eventosPorMes = (int[]) resultados[0];
             double[] porcentajePorMes = (double[]) resultados[1];
 
@@ -248,14 +249,14 @@ public class Modulos {
                     Reportes.eventosPorMesYRangoDeMagnitudes(minMagnitude, maxMagnitude, year, eventosPorMes, porcentajePorMes);
                     break;
                 case 2:
-                    ServicioExportarArchivos.eventosPorMesYRangoDeMagnitudes(minMagnitude, maxMagnitude, year, eventosPorMes, porcentajePorMes);
+                    ServicioExportarArchivos.eventosPorMesYRangoDeMagnitudes(minMagnitude, maxMagnitude, year, eventosPorMes, porcentajePorMes, errorLog);
                     break;
                 case 0:
                     System.out.println("Volviendo al Menú Principal...");
                     break;
                 default:
                     msg = "Opción no válida. Por favor, ingrese una opción entre 0 y 2.";
-                    errorLog.log(msg, WARN,lugar);
+                    errorLog.log(msg, ErrorLog.Level.WARN,lugar);
                     System.out.println(msg);
             }
 
@@ -263,6 +264,7 @@ public class Modulos {
         } while (option != 0);
     }
 
+    // Módulo para eventos por hora dado un año
     public static void eventosPorHora(Scanner scanner, ErrorLog errorLog) {
         int year;
 
@@ -276,7 +278,7 @@ public class Modulos {
                 break; // Salir del bucle si todo está correcto
             } catch (Exception e) {
                 msg = e.getMessage();
-                errorLog.log(msg, ERROR,lugar);
+                errorLog.log(msg, ErrorLog.Level.ERROR,lugar);
                 System.out.println(msg);
             }
         } while (true);
@@ -296,21 +298,21 @@ public class Modulos {
             option = scanner.nextInt();
 
             // Llamada a la función y asignación de los resultados
-            int[] eventosPorHora = ServicioReportes.obtenerEventosPorHoraParaUnAno(year);
+            int[] eventosPorHora = ServicioReportes.obtenerEventosPorHoraParaUnAno(year, errorLog);
 
             switch (option) {
                 case 1:
                     Reportes.eventosPorHora(year, eventosPorHora);
                     break;
                 case 2:
-                    ServicioExportarArchivos.eventosPorHora(year, eventosPorHora);
+                    ServicioExportarArchivos.eventosPorHora(year, eventosPorHora, errorLog);
                     break;
                 case 0:
                     System.out.println("Volviendo al Menú Principal...");
                     break;
                 default:
                     msg = "Opción no válida. Por favor, ingrese una opción entre 0 y 2.";
-                    errorLog.log(msg, WARN,lugar);
+                    errorLog.log(msg, ErrorLog.Level.WARN,lugar);
                     System.out.println(msg);
             }
 

@@ -1,14 +1,19 @@
-package pe.edu.utp.servicios;
+package utp.edu.pe.servicios;
 
-import pe.edu.utp.utilidades.TextUTP;
+import utp.edu.pe.seguridad.ErrorLog;
+import utp.edu.pe.utilidades.TextUTP;
 
 import java.io.IOException;
 
+import static utp.edu.pe.seguridad.ErrorLog.Level.ERROR;
+
 public class ServicioExportarArchivos {
+    static String lugar = "ServicioExportarArchivos";
     private static String[] nombresMeses = {"ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO",
             "JULIO", "AGOSTO", "SETIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"};
 
-    public static void eventosPorRangoDeAnios(int startYear, int endYear, int[] eventosPorMes, double[] porcentajePorMes) {
+    // Método para generar reporte de eventos por rango de años
+    public static void eventosPorRangoDeAnios(int startYear, int endYear, int[] eventosPorMes, double[] porcentajePorMes, ErrorLog errorLog) {
         StringBuilder sb = new StringBuilder();
         // Calcular el total de eventos y el porcentaje total
         int totalEventos = 0;
@@ -37,11 +42,12 @@ public class ServicioExportarArchivos {
         try {
             TextUTP.append(sb.toString(), "src/main/resources/exportados/reportes.txt");
         } catch (IOException e) {
-            e.printStackTrace();
+            errorLog.log(e.getMessage(), ERROR, lugar);
         }
     }
 
-    public static void eventosPorMes(int year, int[] eventosPorMes, double[] porcentajePorMes) {
+    // Método para generar reporte de eventos por mes en un año específico
+    public static void eventosPorMes(int year, int[] eventosPorMes, double[] porcentajePorMes, ErrorLog errorLog) {
         StringBuilder sb = new StringBuilder();
         // Calcular el total de eventos y el porcentaje total
         int totalEventos = 0;
@@ -70,11 +76,12 @@ public class ServicioExportarArchivos {
         try {
             TextUTP.append(sb.toString(), "src/main/resources/exportados/reportes.txt");
         } catch (IOException e) {
-            e.printStackTrace();
+            errorLog.log(e.getMessage(), ERROR, lugar);
         }
     }
 
-    public static void eventosPorMesYRangoDeMagnitudes(double minMagnitude, double maxMagnitude, int year, int[] eventosPorMes, double[] porcentajePorMes) {
+    // Método para generar reporte de eventos por mes y rango de magnitudes en un año específico
+    public static void eventosPorMesYRangoDeMagnitudes(double minMagnitude, double maxMagnitude, int year, int[] eventosPorMes, double[] porcentajePorMes, ErrorLog errorLog) {
         StringBuilder sb = new StringBuilder();
         // Calcular el total de eventos y el porcentaje total
         int totalEventos = 0;
@@ -103,11 +110,12 @@ public class ServicioExportarArchivos {
         try {
             TextUTP.append(sb.toString(), "src/main/resources/exportados/reportes.txt");
         } catch (IOException e) {
-            e.printStackTrace();
+            errorLog.log(e.getMessage(), ERROR, lugar);
         }
     }
 
-    public static void eventosPorHora(int year, int[] eventosPorHora) {
+    // Método para generar reporte de eventos por hora en un año específico
+    public static void eventosPorHora(int year, int[] eventosPorHora, ErrorLog errorLog) {
         StringBuilder sb = new StringBuilder();
         // Calcular el total de eventos
         int totalEventos = 0;
@@ -134,7 +142,7 @@ public class ServicioExportarArchivos {
         try {
             TextUTP.append(sb.toString(), "src/main/resources/exportados/reportes.txt");
         } catch (IOException e) {
-            e.printStackTrace();
+            errorLog.log(e.getMessage(), ERROR, lugar);
         }
     }
 }

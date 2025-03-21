@@ -1,6 +1,6 @@
-package pe.edu.utp.seguridad;
+package utp.edu.pe.seguridad;
 
-import pe.edu.utp.utilidades.TextUTP;
+import utp.edu.pe.utilidades.TextUTP;
 
 import java.io.File;
 import java.io.IOException;
